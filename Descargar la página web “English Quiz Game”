@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>English Quiz Game – Grade 10</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+    #container {
+      background: rgba(0,0,0,0.2);
+      border-radius: 16px;
+      padding: 2rem 3rem;
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+    h1 { font-size: 2rem; margin-bottom: 1rem; }
+    #question { font-size: 1.3rem; margin-bottom: 1.5rem; }
+    .option-btn {
+      display: block;
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: transform 0.1s;
+      background: rgba(255,255,255,0.9);
+      color: #333;
+    }
+    .option-btn:hover { transform: scale(1.03); }
+    .correct { background: #4caf50 !important; color: #fff; animation: pulse 0.4s forwards; }
+    .wrong { background: #f44336 !important; color: #fff; animation: shake 0.4s; }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.07); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
+    }
+    #nextBtn, #restartBtn {
+      margin-top: 1.2rem;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #ffdd57;
+      color: #333;
+    }
+    #score { font-size: 1.5rem; margin-top: 1.2rem; }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <h1>Fun English Quiz</h1>
+    <div id="gameArea">
+      <div id="question"></div>
+      <div id="options"></div>
+      <button id="nextBtn" style="display:none;">Next</button>
+      <div id="score" style="display:none;"></div>
+      <button id="restartBtn" style="display:none;">Play Again</button>
+    </div>
+  </div>
+
+  <!-- Confetti library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    const questions = [
+      {
+        text: "I ___ pizza yesterday.",
+        options: ["eat", "ate", "eaten", "eats"],
+        answer: 1
+      },
+      {
+        text: "She is ___ than her brother.",
+        options: ["tall", "taller", "tallest", "more tall"],
+        answer: 1
+      },
+      {
+        text: "They have been friends ___ 2019.",
+        options: ["for", "since", "at", "in"],
+        answer: 1
+      },
+      {
+        text: "Choose the synonym of 'happy'.",
+        options: ["sad", "angry", "joyful", "tired"],
+        answer: 2
+      },
+      {
+        text: "What is the past participle of 'go'?",
+        options: ["goes", "went", "going", "gone"],
+        answer: 3
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const nextBtn = document.getElementById("nextBtn");
+    const scoreEl = document.getElementById("score");
+    const restartBtn = document.getElementById("restartBtn");
+
+    function loadQuestion() {
+      const q = questions[current];
+      questionEl.textContent = q.text;
+      optionsEl.innerHTML = "";
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.className = "option-btn";
+        btn.onclick = () => selectAnswer(btn, idx === q.answer);
+        optionsEl.appendChild(btn);
+      });
+      nextBtn.style.display = "none";
+    }
+
+    function selectAnswer(btn, correct) {
+      const all = document.querySelectorAll(".option-btn");
+      all.forEach(b => b.disabled = true);
+      if (correct) {
+        btn.classList.add("correct");
+        score++;
+        confetti({particleCount: 80, spread: 70});
+      } else {
+        btn.classList.add("wrong");
+        const q = questions[current];
+        // highlight correct
+        all[q.answer].classList.add("correct");
+      }
+      nextBtn.style.display = "block";
+    }
+
+    nextBtn.onclick = () => {
+      current++;
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        endGame();
+      }
+    };
+
+    function endGame() {
+      questionEl.style.display = "none";
+      optionsEl.style.display = "none";
+      nextBtn.style.display = "none";
+      scoreEl.textContent = `You scored ${score} / ${questions.length}!`;
+      scoreEl.style.display = "block";
+      restartBtn.style.display = "inline-block";
+    }
+
+    restartBtn.onclick = () => {
+      current = 0;
+      score = 0;
+      questionEl.style.display = "";
+      optionsEl.style.display = "";
+      scoreEl.style.display = "none";
+      restartBtn.style.display = "none";
+      loadQuestion();
+    };
+
+    // Init
+    loadQuestion();
+  </script>
+</body>
+</html>
