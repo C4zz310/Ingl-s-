@@ -1,184 +1,876 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>English Quiz Game – Grade 10</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-    }
-    #container {
-      background: rgba(0,0,0,0.2);
-      border-radius: 16px;
-      padding: 2rem 3rem;
-      width: 90%;
-      max-width: 600px;
-      text-align: center;
-      backdrop-filter: blur(8px);
-    }
-    h1 { font-size: 2rem; margin-bottom: 1rem; }
-    #question { font-size: 1.3rem; margin-bottom: 1.5rem; }
-    .option-btn {
-      display: block;
-      width: 100%;
-      margin: 0.5rem 0;
-      padding: 0.8rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: transform 0.1s;
-      background: rgba(255,255,255,0.9);
-      color: #333;
-    }
-    .option-btn:hover { transform: scale(1.03); }
-    .correct { background: #4caf50 !important; color: #fff; animation: pulse 0.4s forwards; }
-    .wrong { background: #f44336 !important; color: #fff; animation: shake 0.4s; }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.07); }
-      100% { transform: scale(1); }
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-6px); }
-      75% { transform: translateX(6px); }
-    }
-    #nextBtn, #restartBtn {
-      margin-top: 1.2rem;
-      padding: 0.8rem 1.5rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background: #ffdd57;
-      color: #333;
-    }
-    #score { font-size: 1.5rem; margin-top: 1.2rem; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Drag & Drop Game - 10 Levels</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #74b9ff, #a29bfe, #fd79a8);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            animation: bounce 2s infinite;
+        }
+
+        .level-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .info-card {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 1.2em;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .level-progress {
+            width: 100%;
+            max-width: 500px;
+            height: 10px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00b894, #00cec9);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .game-container {
+            display: flex;
+            gap: 50px;
+            max-width: 1200px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .animals-section {
+            background: rgba(255,255,255,0.15);
+            padding: 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            min-width: 300px;
+        }
+
+        .section-title {
+            text-align: center;
+            color: white;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .animals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .animal {
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            user-select: none;
+            touch-action: none;
+        }
+
+        .animal:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .animal.dragging {
+            opacity: 0.7;
+            transform: rotate(5deg);
+            z-index: 1000;
+        }
+
+        .animal-emoji {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .animal-name {
+            font-size: 0.9em;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .animal-name.hidden {
+            visibility: hidden;
+        }
+
+        .drop-zones {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .drop-zone {
+            background: rgba(255,255,255,0.3);
+            border: 3px dashed rgba(255,255,255,0.5);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .drop-zone.drag-over {
+            background: rgba(255,255,255,0.5);
+            border-color: #00b894;
+            transform: scale(1.05);
+        }
+
+        .drop-zone.correct {
+            background: rgba(0,184,148,0.3);
+            border-color: #00b894;
+            animation: success 0.6s ease;
+        }
+
+        .drop-zone.incorrect {
+            background: rgba(255,107,107,0.3);
+            border-color: #ff6b6b;
+            animation: shake 0.6s ease;
+        }
+
+        .zone-name {
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .zone-name.scrambled {
+            color: #fdcb6e;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #fd79a8, #fdcb6e);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff6b6b;
+            animation: fall 3s linear infinite;
+        }
+
+        .level-complete {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .level-complete.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .timer {
+            font-size: 1.5em;
+            color: #fdcb6e;
+        }
+
+        .timer.warning {
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        @keyframes success {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .animals-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .drop-zones {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .level-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div id="container">
-    <h1>Fun English Quiz</h1>
-    <div id="gameArea">
-      <div id="question"></div>
-      <div id="options"></div>
-      <button id="nextBtn" style="display:none;">Next</button>
-      <div id="score" style="display:none;"></div>
-      <button id="restartBtn" style="display:none;">Play Again</button>
+    <div class="header">
+        <h1>🐾 Animal Drag & Drop Adventure 🐾</h1>
+        <p>Match animals with their names through 10 exciting levels!</p>
     </div>
-  </div>
 
-  <!-- Confetti library -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <div class="level-info">
+        <div class="info-card">
+            Level: <span id="currentLevel">1</span> / 10
+        </div>
+        <div class="info-card">
+            Score: <span id="score">0</span> / <span id="maxScore">4</span>
+        </div>
+        <div class="info-card">
+            Lives: <span id="lives">❤️❤️❤️</span>
+        </div>
+        <div class="info-card timer">
+            Time: <span id="timer">60</span>s
+        </div>
+    </div>
 
-  <script>
-    const questions = [
-      {
-        text: "I ___ pizza yesterday.",
-        options: ["eat", "ate", "eaten", "eats"],
-        answer: 1
-      },
-      {
-        text: "She is ___ than her brother.",
-        options: ["tall", "taller", "tallest", "more tall"],
-        answer: 1
-      },
-      {
-        text: "They have been friends ___ 2019.",
-        options: ["for", "since", "at", "in"],
-        answer: 1
-      },
-      {
-        text: "Choose the synonym of 'happy'.",
-        options: ["sad", "angry", "joyful", "tired"],
-        answer: 2
-      },
-      {
-        text: "What is the past participle of 'go'?",
-        options: ["goes", "went", "going", "gone"],
-        answer: 3
-      }
-    ];
+    <div class="level-progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
 
-    let current = 0;
-    let score = 0;
+    <div class="game-container">
+        <div class="animals-section">
+            <h2 class="section-title">🦁 Animals</h2>
+            <div class="animals-grid" id="animals">
+                <!-- Animals will be populated by JavaScript -->
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="resetLevel()">🔄 Reset Level</button>
+                <button class="btn" onclick="nextLevel()" id="nextBtn" disabled>➡️ Next Level</button>
+            </div>
+        </div>
 
-    const questionEl = document.getElementById("question");
-    const optionsEl = document.getElementById("options");
-    const nextBtn = document.getElementById("nextBtn");
-    const scoreEl = document.getElementById("score");
-    const restartBtn = document.getElementById("restartBtn");
+        <div class="animals-section">
+            <h2 class="section-title">📝 Animal Names</h2>
+            <div class="drop-zones" id="dropZones">
+                <!-- Drop zones will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
 
-    function loadQuestion() {
-      const q = questions[current];
-      questionEl.textContent = q.text;
-      optionsEl.innerHTML = "";
-      q.options.forEach((opt, idx) => {
-        const btn = document.createElement("button");
-        btn.textContent = opt;
-        btn.className = "option-btn";
-        btn.onclick = () => selectAnswer(btn, idx === q.answer);
-        optionsEl.appendChild(btn);
-      });
-      nextBtn.style.display = "none";
-    }
+    <div class="celebration" id="celebration"></div>
 
-    function selectAnswer(btn, correct) {
-      const all = document.querySelectorAll(".option-btn");
-      all.forEach(b => b.disabled = true);
-      if (correct) {
-        btn.classList.add("correct");
-        score++;
-        confetti({particleCount: 80, spread: 70});
-      } else {
-        btn.classList.add("wrong");
-        const q = questions[current];
-        // highlight correct
-        all[q.answer].classList.add("correct");
-      }
-      nextBtn.style.display = "block";
-    }
+    <div class="level-complete" id="levelComplete">
+        <h2 id="levelCompleteTitle">🎉 Level Complete! 🎉</h2>
+        <p id="levelCompleteMessage">Great job! You're ready for the next challenge!</p>
+        <button class="btn" onclick="proceedToNextLevel()">Continue</button>
+    </div>
 
-    nextBtn.onclick = () => {
-      current++;
-      if (current < questions.length) {
-        loadQuestion();
-      } else {
-        endGame();
-      }
-    };
+    <script>
+        const animalData = {
+            1: [
+                { emoji: '🦁', name: 'Lion' },
+                { emoji: '🐘', name: 'Elephant' },
+                { emoji: '🦒', name: 'Giraffe' },
+                { emoji: '🐼', name: 'Panda' }
+            ],
+            2: [
+                { emoji: '🦋', name: 'Butterfly' },
+                { emoji: '🐸', name: 'Frog' },
+                { emoji: '🦉', name: 'Owl' },
+                { emoji: '🐙', name: 'Octopus' }
+            ],
+            3: [
+                { emoji: '🦊', name: 'Fox' },
+                { emoji: '🐺', name: 'Wolf' },
+                { emoji: '🦝', name: 'Raccoon' },
+                { emoji: '🦔', name: 'Hedgehog' },
+                { emoji: '🐿️', name: 'Squirrel' }
+            ],
+            4: [
+                { emoji: '🦅', name: 'Eagle' },
+                { emoji: '🦜', name: 'Parrot' },
+                { emoji: '🦢', name: 'Swan' },
+                { emoji: '🦆', name: 'Duck' },
+                { emoji: '🐧', name: 'Penguin' }
+            ],
+            5: [
+                { emoji: '🦈', name: 'Shark' },
+                { emoji: '🐬', name: 'Dolphin' },
+                { emoji: '🐳', name: 'Whale' },
+                { emoji: '🦭', name: 'Seal' },
+                { emoji: '🐠', name: 'Fish' },
+                { emoji: '🦑', name: 'Squid' }
+            ],
+            6: [
+                { emoji: '🦏', name: 'Rhinoceros' },
+                { emoji: '🦛', name: 'Hippopotamus' },
+                { emoji: '🦘', name: 'Kangaroo' },
+                { emoji: '🦌', name: 'Deer' },
+                { emoji: '🐪', name: 'Camel' },
+                { emoji: '🦙', name: 'Llama' }
+            ],
+            7: [
+                { emoji: '🐍', name: 'Snake' },
+                { emoji: '🦎', name: 'Lizard' },
+                { emoji: '🐢', name: 'Turtle' },
+                { emoji: '🦕', name: 'Dinosaur' },
+                { emoji: '🦖', name: 'T-Rex' },
+                { emoji: '🐊', name: 'Crocodile' },
+                { emoji: '🦴', name: 'Bone' }
+            ],
+            8: [
+                { emoji: '🦗', name: 'Cricket' },
+                { emoji: '🐛', name: 'Caterpillar' },
+                { emoji: '🐜', name: 'Ant' },
+                { emoji: '🐝', name: 'Bee' },
+                { emoji: '🕷️', name: 'Spider' },
+                { emoji: '🦂', name: 'Scorpion' },
+                { emoji: '🐞', name: 'Ladybug' }
+            ],
+            9: [
+                { emoji: '🦇', name: 'Bat' },
+                { emoji: '🐻', name: 'Bear' },
+                { emoji: '🐯', name: 'Tiger' },
+                { emoji: '🐆', name: 'Leopard' },
+                { emoji: '🐅', name: 'Tiger' },
+                { emoji: '🦁', name: 'Lion' },
+                { emoji: '🐺', name: 'Wolf' },
+                { emoji: '🦊', name: 'Fox' }
+            ],
+            10: [
+                { emoji: '🐉', name: 'Dragon' },
+                { emoji: '🦄', name: 'Unicorn' },
+                { emoji: '🐲', name: 'Dragon' },
+                { emoji: '🦅', name: 'Eagle' },
+                { emoji: '🦆', name: 'Duck' },
+                { emoji: '🐧', name: 'Penguin' },
+                { emoji: '🦢', name: 'Swan' },
+                { emoji: '🦜', name: 'Parrot' },
+                { emoji: '🦩', name: 'Flamingo' }
+            ]
+        };
 
-    function endGame() {
-      questionEl.style.display = "none";
-      optionsEl.style.display = "none";
-      nextBtn.style.display = "none";
-      scoreEl.textContent = `You scored ${score} / ${questions.length}!`;
-      scoreEl.style.display = "block";
-      restartBtn.style.display = "inline-block";
-    }
+        let currentLevel = 1;
+        let score = 0;
+        let lives = 3;
+        let timer = 60;
+        let gameTimer = null;
+        let draggedAnimal = null;
+        let levelAnimals = [];
+        let hideNames = false;
+        let scrambleNames = false;
+        let timeLimit = 60;
 
-    restartBtn.onclick = () => {
-      current = 0;
-      score = 0;
-      questionEl.style.display = "";
-      optionsEl.style.display = "";
-      scoreEl.style.display = "none";
-      restartBtn.style.display = "none";
-      loadQuestion();
-    };
+        function updateLevelSettings() {
+            // Level-specific settings
+            switch(currentLevel) {
+                case 1:
+                    timeLimit = 60;
+                    hideNames = false;
+                    scrambleNames = false;
+                    break;
+                case 2:
+                    timeLimit = 50;
+                    hideNames = false;
+                    scrambleNames = false;
+                    break;
+                case 3:
+                    timeLimit = 45;
+                    hideNames = true; // Hide animal names on cards
+                    scrambleNames = false;
+                    break;
+                case 4:
+                    timeLimit = 40;
+                    hideNames = true;
+                    scrambleNames = false;
+                    break;
+                case 5:
+                    timeLimit = 35;
+                    hideNames = true;
+                    scrambleNames = true; // Scramble letters in drop zones
+                    break;
+                case 6:
+                    timeLimit = 30;
+                    hideNames = true;
+                    scrambleNames = true;
+                    break;
+                case 7:
+                    timeLimit = 25;
+                    hideNames = true;
+                    scrambleNames = true;
+                    break;
+                case 8:
+                    timeLimit = 20;
+                    hideNames = true;
+                    scrambleNames = true;
+                    break;
+                case 9:
+                    timeLimit = 15;
+                    hideNames = true;
+                    scrambleNames = true;
+                    break;
+                case 10:
+                    timeLimit = 10;
+                    hideNames = true;
+                    scrambleNames = true;
+                    break;
+            }
+        }
 
-    // Init
-    loadQuestion();
-  </script>
+        function scrambleWord(word) {
+            const letters = word.split('');
+            for (let i = letters.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [letters[i], letters[j]] = [letters[j], letters[i]];
+            }
+            return letters.join('');
+        }
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function startTimer() {
+            timer = timeLimit;
+            document.getElementById('timer').textContent = timer;
+            document.getElementById('timer').parentElement.classList.remove('warning');
+            
+            gameTimer = setInterval(() => {
+                timer--;
+                document.getElementById('timer').textContent = timer;
+                
+                if (timer <= 10) {
+                    document.getElementById('timer').parentElement.classList.add('warning');
+                }
+                
+                if (timer <= 0) {
+                    clearInterval(gameTimer);
+                    loseLife();
+                }
+            }, 1000);
+        }
+
+        function loseLife() {
+            lives--;
+            updateLivesDisplay();
+            
+            if (lives <= 0) {
+                alert('😢 Game Over! Try again from level 1!');
+                resetGame();
+            } else {
+                alert(`⏰ Time's up! Lives remaining: ${lives}`);
+                resetLevel();
+            }
+        }
+
+        function updateLivesDisplay() {
+            const hearts = '❤️'.repeat(lives) + '🖤'.repeat(3 - lives);
+            document.getElementById('lives').textContent = hearts;
+        }
+
+        function updateProgress() {
+            const progress = (currentLevel - 1) * 10 + (score / levelAnimals.length) * 10;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function createAnimals() {
+            const animalsContainer = document.getElementById('animals');
+            levelAnimals = animalData[currentLevel];
+            const shuffledAnimals = shuffleArray(levelAnimals);
+            
+            animalsContainer.innerHTML = '';
+            shuffledAnimals.forEach((animal, index) => {
+                const animalDiv = document.createElement('div');
+                animalDiv.className = 'animal';
+                animalDiv.draggable = true;
+                animalDiv.dataset.name = animal.name;
+                animalDiv.innerHTML = `
+                    <span class="animal-emoji">${animal.emoji}</span>
+                    <div class="animal-name ${hideNames ? 'hidden' : ''}">${animal.name}</div>
+                `;
+                
+                animalDiv.addEventListener('dragstart', handleDragStart);
+                animalDiv.addEventListener('dragend', handleDragEnd);
+                
+                // Touch events for mobile
+                animalDiv.addEventListener('touchstart', handleTouchStart);
+                animalDiv.addEventListener('touchmove', handleTouchMove);
+                animalDiv.addEventListener('touchend', handleTouchEnd);
+                
+                animalsContainer.appendChild(animalDiv);
+            });
+        }
+
+        function createDropZones() {
+            const dropZonesContainer = document.getElementById('dropZones');
+            const shuffledNames = shuffleArray(levelAnimals.map(a => a.name));
+            
+            dropZonesContainer.innerHTML = '';
+            shuffledNames.forEach(name => {
+                const dropZone = document.createElement('div');
+                dropZone.className = 'drop-zone';
+                dropZone.dataset.name = name;
+                
+                const displayName = scrambleNames ? scrambleWord(name) : name;
+                dropZone.innerHTML = `<div class="zone-name ${scrambleNames ? 'scrambled' : ''}">${displayName}</div>`;
+                
+                dropZone.addEventListener('dragover', handleDragOver);
+                dropZone.addEventListener('drop', handleDrop);
+                dropZone.addEventListener('dragenter', handleDragEnter);
+                dropZone.addEventListener('dragleave', handleDragLeave);
+                
+                dropZonesContainer.appendChild(dropZone);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedAnimal = e.target;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.outerHTML);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            e.target.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.target.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.target.classList.remove('drag-over');
+            
+            if (draggedAnimal && e.target.classList.contains('drop-zone')) {
+                const animalName = draggedAnimal.dataset.name;
+                const zoneName = e.target.dataset.name;
+                
+                if (animalName === zoneName) {
+                    // Correct match
+                    e.target.classList.add('correct');
+                    e.target.innerHTML = draggedAnimal.outerHTML;
+                    draggedAnimal.style.display = 'none';
+                    
+                    score++;
+                    document.getElementById('score').textContent = score;
+                    updateProgress();
+                    
+                    setTimeout(() => {
+                        e.target.classList.remove('correct');
+                    }, 600);
+                    
+                    if (score === levelAnimals.length) {
+                        clearInterval(gameTimer);
+                        setTimeout(() => {
+                            completeLevel();
+                        }, 800);
+                    }
+                } else {
+                    // Incorrect match
+                    e.target.classList.add('incorrect');
+                    setTimeout(() => {
+                        e.target.classList.remove('incorrect');
+                    }, 600);
+                }
+            }
+        }
+
+        // Touch events for mobile support
+        let touchItem = null;
+        let touchOffset = { x: 0, y: 0 };
+
+        function handleTouchStart(e) {
+            touchItem = e.target.closest('.animal');
+            if (touchItem) {
+                const touch = e.touches[0];
+                const rect = touchItem.getBoundingClientRect();
+                touchOffset.x = touch.clientX - rect.left;
+                touchOffset.y = touch.clientY - rect.top;
+                touchItem.classList.add('dragging');
+            }
+        }
+
+        function handleTouchMove(e) {
+            if (touchItem) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                touchItem.style.position = 'fixed';
+                touchItem.style.left = (touch.clientX - touchOffset.x) + 'px';
+                touchItem.style.top = (touch.clientY - touchOffset.y) + 'px';
+                touchItem.style.zIndex = '1000';
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (touchItem) {
+                const touch = e.changedTouches[0];
+                const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                const dropZone = elementBelow ? elementBelow.closest('.drop-zone') : null;
+                
+                if (dropZone) {
+                    const animalName = touchItem.dataset.name;
+                    const zoneName = dropZone.dataset.name;
+                    
+                    if (animalName === zoneName) {
+                        dropZone.classList.add('correct');
+                        dropZone.innerHTML = touchItem.outerHTML;
+                        touchItem.style.display = 'none';
+                        
+                        score++;
+                        document.getElementById('score').textContent = score;
+                        updateProgress();
+                        
+                        setTimeout(() => {
+                            dropZone.classList.remove('correct');
+                        }, 600);
+                        
+                        if (score === levelAnimals.length) {
+                            clearInterval(gameTimer);
+                            setTimeout(() => {
+                                completeLevel();
+                            }, 800);
+                        }
+                    } else {
+                        dropZone.classList.add('incorrect');
+                        setTimeout(() => {
+                            dropZone.classList.remove('incorrect');
+                        }, 600);
+                    }
+                }
+                
+                // Reset touch item position
+                touchItem.style.position = '';
+                touchItem.style.left = '';
+                touchItem.style.top = '';
+                touchItem.style.zIndex = '';
+                touchItem.classList.remove('dragging');
+                touchItem = null;
+            }
+        }
+
+        function completeLevel() {
+            celebrate();
+            
+            const levelCompleteDiv = document.getElementById('levelComplete');
+            const titleElement = document.getElementById('levelCompleteTitle');
+            const messageElement = document.getElementById('levelCompleteMessage');
+            
+            if (currentLevel === 10) {
+                titleElement.textContent = '🏆 Congratulations! Game Complete! 🏆';
+                messageElement.textContent = 'You\'ve mastered all 10 levels! You\'re an animal expert!';
+            } else {
+                titleElement.textContent = `🎉 Level ${currentLevel} Complete! 🎉`;
+                messageElement.textContent = `Great job! Time remaining: ${timer}s. Ready for level ${currentLevel + 1}?`;
+            }
+            
+            levelCompleteDiv.classList.add('show');
+        }
+
+        function proceedToNextLevel() {
+            document.getElementById('levelComplete').classList.remove('show');
+            
+            if (currentLevel === 10) {
+                resetGame();
+            } else {
+                nextLevel();
+            }
+        }
+
+        function nextLevel() {
+            if (currentLevel < 10) {
+                currentLevel++;
+                resetLevel();
+            }
+        }
+
+        function resetLevel() {
+            clearInterval(gameTimer);
+            score = 0;
+            updateLevelSettings();
+            
+            document.getElementById('currentLevel').textContent = currentLevel;
+            document.getElementById('score').textContent = score;
+            document.getElementById('maxScore').textContent = animalData[currentLevel].length;
+            document.getElementById('nextBtn').disabled = true;
+            
+            updateProgress();
+            
+            // Clear drop zones
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.classList.remove('correct', 'incorrect');
+            });
+            
+            // Show all animals again
+            document.querySelectorAll('.animal').forEach(animal => {
+                animal.style.display = 'block';
+            });
+            
+            // Recreate level
+            createAnimals();
+            createDropZones();
+            startTimer();
+        }
+
+        function resetGame() {
+            currentLevel = 1;
+            lives = 3;
+            score = 0;
+            updateLivesDisplay();
+            resetLevel();
+        }
+
+        function celebrate() {
+            const celebration = document.getElementById('celebration');
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 3 + 's';
+                celebration.appendChild(confetti);
+            }
+            
+            setTimeout(() => {
+                celebration.innerHTML = '';
+            }, 3000);
+        }
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', () => {
+            updateLevelSettings();
+            updateLivesDisplay();
+            resetLevel();
+        });
+    </script>
 </body>
 </html>
